@@ -1,0 +1,46 @@
+# Переменные окружения
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+
+# База данных
+*.db
+*.sqlite
+*.sqlite3
+
+# Логи
+logs/
+*.log
+
+# PID файлы
+pids/
+*.pid
+
+# JSON файлы с данными (опционально, если используете SQLite)
+# orders.json
+# beats_purchases.json
+# payment_logs.json
+# accepted_price.json
+# payment_details.json
+# waiting_client_price_sync.json
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+

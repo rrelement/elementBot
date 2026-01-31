@@ -1,0 +1,19 @@
+[Unit]
+Description=Element Bot - Main Telegram Bot
+After=network.target
+
+[Service]
+Type=simple
+User=your_user
+WorkingDirectory=/path/to/elementBot
+Environment="PATH=/path/to/elementBot/venv/bin"
+ExecStart=/path/to/elementBot/venv/bin/python /path/to/elementBot/elementBot.py
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
+
+
