@@ -3560,7 +3560,7 @@ async def license_callback(callback):
                     if "message is not modified" in error_str:
                         logging.debug(f"Кнопки выбора лицензии уже удалены (message is not modified)")
                     else:
-                    logging.error(f"Ошибка при удалении кнопок выбора лицензии: {e2}")
+                        logging.error(f"Ошибка при удалении кнопок выбора лицензии: {e2}")
     except Exception as e:
         logging.error(f"Ошибка при обработке license_callback: {e}")
         pass
@@ -4989,7 +4989,7 @@ async def payment_callback(callback):
                 if "message is not modified" in error_str:
                     logging.debug(f"payment_callback: Кнопки из сообщения {message_id} уже удалены (message is not modified)")
                 else:
-                logging.error(f"payment_callback: Ошибка при удалении кнопок из сообщения {message_id}: {e_rm}")
+                    logging.error(f"payment_callback: Ошибка при удалении кнопок из сообщения {message_id}: {e_rm}")
             
             # Затем пытаемся обновить текст
             try:
@@ -5134,7 +5134,7 @@ async def continue_payment_callback(callback):
                     if "message is not modified" in error_str:
                         logging.debug(f"Кнопки выбора действия уже удалены (message is not modified)")
                     else:
-                    logging.error(f"Ошибка при удалении кнопок выбора действия: {e2}")
+                        logging.error(f"Ошибка при удалении кнопок выбора действия: {e2}")
     except Exception as e:
         logging.error(f"Ошибка при обработке continue_payment_callback: {e}")
         pass
@@ -5247,7 +5247,7 @@ async def offer_price_callback(callback):
                     if "message is not modified" in error_str:
                         logging.debug(f"Кнопки выбора действия в offer_price уже удалены (message is not modified)")
                     else:
-                    logging.error(f"Ошибка при удалении кнопок выбора действия в offer_price: {e2}")
+                        logging.error(f"Ошибка при удалении кнопок выбора действия в offer_price: {e2}")
     except Exception as e:
         logging.error(f"Ошибка при обработке offer_price_callback: {e}")
         pass
@@ -5353,7 +5353,7 @@ async def back_to_main(callback):
                         if "message is not modified" in error_str:
                             logging.debug(f"Кнопки из сообщения {msg_id} уже удалены (message is not modified)")
                         else:
-                        logging.error(f"Ошибка при удалении кнопок из сообщения {msg_id}: {e}")
+                            logging.error(f"Ошибка при удалении кнопок из сообщения {msg_id}: {e}")
             except Exception as e:
                 logging.error(f"Ошибка при обработке сообщения в back_to_main: {e}")
                 continue
@@ -5525,7 +5525,7 @@ async def paid_callback(callback):
                 if "message is not modified" in error_str:
                     logging.debug(f"Кнопки из сообщения с реквизитами уже удалены (message is not modified)")
                 else:
-                logging.error(f"Ошибка при удалении кнопок из сообщения с реквизитами: {e}")
+                    logging.error(f"Ошибка при удалении кнопок из сообщения с реквизитами: {e}")
                 pass
     except Exception as e:
         logging.error(f"Ошибка при обработке paid_callback: {e}")
@@ -5576,7 +5576,7 @@ async def request_card_details(callback):
                 if "message is not modified" in error_str:
                     logging.debug(f"Сообщение в request_card_details уже в нужном состоянии (message is not modified)")
                 else:
-                logging.error(f"Ошибка при редактировании сообщения в request_card_details: {e}")
+                    logging.error(f"Ошибка при редактировании сообщения в request_card_details: {e}")
                 # Если не удалось изменить текст, просто убираем кнопки
                 try:
                     await callback.message.bot.edit_message_reply_markup(
@@ -5585,11 +5585,11 @@ async def request_card_details(callback):
                         reply_markup=None
                     )
                 except Exception as e2:
-                        error_str2 = str(e2).lower()
-                        if "message is not modified" in error_str2:
-                            logging.debug(f"Кнопки в request_card_details уже удалены (message is not modified)")
-                        else:
-                    logging.error(f"Ошибка при удалении кнопок в request_card_details: {e2}")
+                    error_str2 = str(e2).lower()
+                    if "message is not modified" in error_str2:
+                        logging.debug(f"Кнопки в request_card_details уже удалены (message is not modified)")
+                    else:
+                        logging.error(f"Ошибка при удалении кнопок в request_card_details: {e2}")
     except Exception as e:
         logging.error(f"Ошибка при обработке request_card_details: {e}")
         pass
