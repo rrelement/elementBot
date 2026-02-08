@@ -3,6 +3,7 @@
 Хранит данные в SQLite базе данных.
 """
 import aiosqlite
+import logging
 from datetime import datetime
 from typing import Dict, List, Optional
 from database import get_db
@@ -37,6 +38,10 @@ async def add_partner(user_id: int, username: str, partner_type: str = "partner"
         """, (user_id, username, name or username, partner_type))
         await db.commit()
         return True
+    except Exception as e:
+        logging.error(f"Ошибка при добавлении партнера: {e}")
+        await db.rollback()
+        raise
     finally:
         await db.close()
 
@@ -142,7 +147,7 @@ async def create_partner_request(user_id: int, username: str, partner_type: str 
     """
     db = await get_db()
     try:
-        # Проверяем, не существует ли уже активная заявка
+        # Проверяем, не существует ли уже активная заявка (в рамках того же соединения)
         cursor = await db.execute("""
             SELECT user_id FROM partner_requests 
             WHERE user_id = ? AND status = 'pending'
@@ -150,8 +155,12 @@ async def create_partner_request(user_id: int, username: str, partner_type: str 
         if await cursor.fetchone():
             return False
         
-        # Проверяем, не является ли уже партнером
-        if await get_partner(user_id):
+        # Проверяем, не является ли уже партнером (в рамках того же соединения)
+        cursor = await db.execute(
+            "SELECT user_id FROM partners WHERE user_id = ?",
+            (user_id,)
+        )
+        if await cursor.fetchone():
             return False
         
         # Создаем заявку
@@ -218,6 +227,22 @@ async def approve_partner_request(user_id: int, admin_id: int) -> bool:
         
         request = dict(row)
         
+        # Проверяем, не существует ли уже партнер (в рамках того же соединения)
+        cursor = await db.execute(
+            "SELECT user_id FROM partners WHERE user_id = ?",
+            (request["user_id"],)
+        )
+        if await cursor.fetchone():
+            # Партнер уже существует, просто одобряем заявку
+            reviewed_at = datetime.now().isoformat()
+            await db.execute("""
+                UPDATE partner_requests 
+                SET status = 'approved', reviewed_at = ?, reviewed_by = ?
+                WHERE user_id = ? AND created_at = ?
+            """, (reviewed_at, admin_id, user_id, request["created_at"]))
+            await db.commit()
+            return True
+        
         # Одобряем заявку
         reviewed_at = datetime.now().isoformat()
         await db.execute("""
@@ -226,13 +251,11 @@ async def approve_partner_request(user_id: int, admin_id: int) -> bool:
             WHERE user_id = ? AND created_at = ?
         """, (reviewed_at, admin_id, user_id, request["created_at"]))
         
-        # Добавляем партнера
-        await add_partner(
-            user_id=request["user_id"],
-            username=request["username"],
-            partner_type=request["type"],
-            name=request["name"]
-        )
+        # Добавляем партнера в рамках того же соединения
+        await db.execute("""
+            INSERT INTO partners (user_id, username, name, type, active, orders_accepted, orders_completed)
+            VALUES (?, ?, ?, ?, 1, 0, 0)
+        """, (request["user_id"], request["username"], request["name"] or request["username"], request["type"]))
         
         await db.commit()
         return True
